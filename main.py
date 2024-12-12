@@ -174,7 +174,13 @@ def encrypt(plain_text: str, decrypt=False, inp_binary=False, mode='ECB', parall
                 pass
 
     elif mode == 'CTR':
-        pass
+        if decrypt:
+            sub_keys = sub_keys[::-1]
+        cipher_text, counter = '', int(IV, 16) + 1
+        for block in blocks:
+            cipher_text += xor(block,
+                               encrypt_block(hex(counter), sub_keys), True)
+            counter += 1
 
     elif mode == 'OFB':
         cipher_text, next_input = '', IV
@@ -207,10 +213,10 @@ def encrypt_block(inp: str, sub_keys: list[str]) -> str:
 
 
 if __name__ == "__main__":
-    mode = 'OFB'
+    mode = 'CTR'
 
-    plain_text = "6 Nuclear Missiles will be launched at 5:32 AM October 7, 2024 "
-    # plain_text = "I ♡ Cyper Security"
+    # plain_text = "6 Nuclear Missiles will be launched at 5:32 AM October 7, 2024 "
+    plain_text = "I ♡ Cyper Security"
     # plain_text = "This is the Plain Text"
     # plain_text = "Coded By Omid Reza Borzoei 99243020"
     # plain_text = "You Can See a Variety of Characters In this Message: @#$%^&*()!~+:?><[]\|"
