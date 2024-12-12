@@ -102,7 +102,7 @@ def feistel(l: str, r: str, key: str) -> str:
     return r, new_r
 
 
-def encrypt(plain_text: str, decrypt=False, inp_binary=False, mode='ECB', parallel = False) -> str:
+def encrypt(plain_text: str, decrypt=False, inp_binary=False, mode='ECB', parallel=False) -> str:
 
     supported_modes = ['CBC', 'OFB', 'CTR', 'ECB']
     if mode not in supported_modes:
@@ -144,9 +144,9 @@ def encrypt(plain_text: str, decrypt=False, inp_binary=False, mode='ECB', parall
         if not parallel:
             cipher_text = [encrypt_block(i, sub_keys) for i in blocks]
             cipher_text = ''.join(cipher_text)
-        
+
         if parallel:
-            pass 
+            pass
 
     elif mode == 'CBC':
 
@@ -167,19 +167,22 @@ def encrypt(plain_text: str, decrypt=False, inp_binary=False, mode='ECB', parall
                 cipher_text = xor(encrypt_block(blocks[0], sub_keys), IV, True)
                 for i in range(1, len(blocks)):
                     cipher_text += xor(encrypt_block(blocks[i],
-                                    sub_keys), blocks[i-1], True)
+                                                     sub_keys), blocks[i-1], True)
             # Parallel Decrypting:
             else:
                 """Your Job"""
-                pass 
-            
+                pass
+
     elif mode == 'CTR':
-        """Your Job"""
-        pass 
-    
+        pass
+
     elif mode == 'OFB':
-        """Your Job"""
-        pass 
+        cipher_text, next_input = '', IV
+        if decrypt:
+            sub_keys = sub_keys[::-1]
+        for block in blocks:
+            next_input = encrypt_block(next_input, sub_keys)
+            cipher_text += xor(next_input, block, True)
 
     return bytes.fromhex(cipher_text).decode() if decrypt else cipher_text
 
@@ -204,7 +207,7 @@ def encrypt_block(inp: str, sub_keys: list[str]) -> str:
 
 
 if __name__ == "__main__":
-    mode = 'ECB'  
+    mode = 'OFB'
 
     plain_text = "6 Nuclear Missiles will be launched at 5:32 AM October 7, 2024 "
     # plain_text = "I ♡ Cyper Security"
